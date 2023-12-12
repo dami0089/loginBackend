@@ -52,6 +52,7 @@ const editarUsuario = async (req, res) => {
 };
 
 const registrar = async (req, res) => {
+  const { id } = req.params;
   let { email } = req.body;
 
   email = email.toLowerCase();
@@ -62,9 +63,16 @@ const registrar = async (req, res) => {
     return res.status(400).json({ msg: error.message });
   }
 
+  const empresa = await Empresas.findById(id);
+
+  const nombreTemp = generarNombreUsuario();
+
   try {
     const usuario = new Usuario(req.body);
+    usuario.empresa = empresa._id;
+    usuario.nombreEmpresa = empresa.nombre;
     usuario.token = generarId();
+    usuario.nombreUsuario = nombreTemp;
 
     const usuarioAlmacenado = await usuario.save();
 
