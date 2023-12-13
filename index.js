@@ -20,7 +20,7 @@ app.use(cors());
 app.use("/api/usuarios", router);
 app.use("/api/empresas", routesEmpresa);
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 4001;
 
 // Crea una instancia del servidor HTTP y asóciala con tu app Express
 const httpServer = new Server(app);
