@@ -15,6 +15,7 @@ import {
   eliminarUsuario,
   obtenerUsuarios,
   validarAutentication,
+  perfil2,
 } from "../controllers/usuarioController.js";
 
 import checkAuth from "../middleware/checkAuth.js";
@@ -29,6 +30,8 @@ router.route("/olvide-password/:token").get(comprobarToken).post(nuevoPassword);
 router.post("/comprobar", checkAuth, comprobarUsuario);
 router.put("/editar-usuario/:id", checkAuth, editarUsuario);
 router.get("/perfil", checkAuth, perfil);
+router.post("/perfil/:id", checkAuth, perfil2);
+
 router.delete("/eliminar-usuario/:id", checkAuth, eliminarUsuario);
 router.get("/obtener-usuarios", checkAuth, obtenerUsuarios);
 

@@ -2,7 +2,6 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import { Server } from "http"; // <-- Importa esto
-
 import conectarDB from "./config/db.js";
 import router from "./routes/usuarioRoutes.js";
 import routesEmpresa from "./routes/empresasRoutes.js";

@@ -3,6 +3,7 @@ import generarId from "../helpers/generarId.js";
 import generarJWT from "../helpers/generarJWT.js";
 import { emailRegistro, emailOlvidePassword } from "../helpers/emails.js";
 import Empresas from "../models/Empresas.js";
+import generarNombreUsuario from "../helpers/generarNombreUsuario.js";
 
 const obtenerUsuario = async (req, res) => {
   const { id } = req.params;
@@ -69,8 +70,6 @@ const registrar = async (req, res) => {
 
   try {
     const usuario = new Usuario(req.body);
-    usuario.empresa = empresa._id;
-    usuario.nombreEmpresa = empresa.nombre;
     usuario.token = generarId();
     usuario.nombreUsuario = nombreTemp;
 
@@ -91,7 +90,7 @@ const registrar = async (req, res) => {
 
 const autenticar = async (req, res) => {
   const { email, password } = req.body;
-  console.log("Autentico");
+
   const emailRegex = new RegExp(`^${email}$`, "i");
   let usuario = await Usuario.findOne({ email: emailRegex });
 
@@ -107,8 +106,6 @@ const autenticar = async (req, res) => {
     return res.status(404).json({ msg: error.message });
   }
 
-  console.log(usuario);
-
   // Comprobar si el usuario está confirmado
   if (!usuario.confirmado) {
     const error = new Error("Tu cuenta no ha sido confirmada");
@@ -116,8 +113,10 @@ const autenticar = async (req, res) => {
   }
 
   const idAutentication = generarId();
-  console.log(idAutentication);
   usuario.autentication = idAutentication;
+  const tok = generarJWT(usuario._id);
+  usuario.token = tok;
+  const user = await usuario.save();
 
   // Comprobar su password
   if (await usuario.comprobarPassword(password)) {
@@ -127,10 +126,9 @@ const autenticar = async (req, res) => {
       nombreUsuario: usuario.nombreUsuario,
       rol: usuario.rol,
       email: usuario.email,
-      token: generarJWT(usuario._id),
+      token: tok,
       autentication: idAutentication,
     });
-    const user = await usuario.save();
   } else {
     const error = new Error("El password es incorrecto");
     return res.status(403).json({ msg: error.message });
@@ -264,6 +262,14 @@ const perfil = async (req, res) => {
   res.json(usuario);
 };
 
+const perfil2 = async (req, res) => {
+  const { id } = req.params;
+
+  const user = await Usuario.findById(id);
+
+  res.json(user);
+};
+
 const obtenerUsuarios = async (req, res) => {
   const usuarios = await Usuario.find();
 
@@ -314,4 +320,5 @@ export {
   eliminarUsuario,
   obtenerUsuarios,
   validarAutentication,
+  perfil2,
 };
